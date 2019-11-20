@@ -4,8 +4,19 @@ import './styles/Badges.css'
 import confLogo from '../images/badge-header.svg'
 import BadgesList from '../componets/BadgesList'
 import { Link } from 'react-router-dom'
+import PageLoading from '../componets/PageLoading'
+import PageError from '../componets/PageError'
+
+import api from '../api'
 
 class Badges extends React.Component{
+
+    state = {
+        loading: true,
+        error: null,
+        data: undefined,
+    }
+    /*
     constructor(props){
         super(props)
         console.log('1. constructor()')
@@ -72,10 +83,33 @@ class Badges extends React.Component{
     componentWillUnmount(){
         console.log('6. componentWillUnmount')
         clearTimeout(this.timeoutId)
+    }*/
+
+    componentDidMount(){
+        this.fetchData()
+    }
+
+    fetchData = async () =>{
+        this.setState({loading: true, error: null})
+
+        try {
+            const data = await api.badges.list()
+            this.setState({ loading: false, data: data})
+        } catch (error){
+            this.setState({ loading: false, error: error})
+        }
     }
 
     render(){
-        console.log('2/4 render()')
+        //console.log('2/4 render()')
+
+        if(this.state.loading === true){
+            return <PageLoading />
+        }
+
+        if(this.state.error){
+            return <PageError error={this.state.error} />
+        }
         return(
             <React.Fragment>
                 <div className="Badges">
